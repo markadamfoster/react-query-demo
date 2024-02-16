@@ -7,12 +7,9 @@ const fetchSuperHeroes = () => {
 };
 
 export const RQSuperHeroesPage = () => {
-  const [shouldPoll, setShouldPoll] = useState(true);
+  const [shouldPoll, setShouldPoll] = useState(false);
 
   const onSuccess = (data) => {
-    if (data.data.length !== 3) {
-      setShouldPoll(false);
-    }
     console.log("Perform side effect after data fetching", data);
   };
 
@@ -34,6 +31,10 @@ export const RQSuperHeroesPage = () => {
       refetchInterval: shouldPoll ? 1000 : false,
       // refetchIntervalInBackground: false,
       // enabled: false,
+      select: (data) => {
+        const superHeroNames = data.data.map((hero) => hero.name);
+        return superHeroNames;
+      },
     }
   );
 
@@ -53,8 +54,11 @@ export const RQSuperHeroesPage = () => {
         {isFetching ? "Fetching..." : "Fetch Heroes"}
       </button>
 
-      {data?.data.map((hero) => {
+      {/* {data?.data.map((hero) => {
         return <div key={hero.name}>{hero.name}</div>;
+      })} */}
+      {data.map((heroName) => {
+        return <div key={heroName}>{heroName}</div>;
       })}
     </>
   );

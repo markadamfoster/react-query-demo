@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "react-query";
 import axios from "axios";
 
@@ -6,15 +7,31 @@ const fetchSuperHeroes = () => {
 };
 
 export const RQSuperHeroesPage = () => {
+  const [shouldPoll, setShouldPoll] = useState(true);
+
+  const onSuccess = (data) => {
+    if (data.data.length !== 3) {
+      setShouldPoll(false);
+    }
+    console.log("Perform side effect after data fetching", data);
+  };
+
+  const onError = (error) => {
+    console.log("Perform side effect after encountering error", error);
+    setShouldPoll(false);
+  };
+
   const { isLoading, isFetching, data, isError, error, refetch } = useQuery(
     "super-heroes",
     fetchSuperHeroes,
     {
+      onSuccess,
+      onError,
       // cacheTime: 5000,
       // staleTime: 30000,
       // refetchOnMount: true,
       // refetchOnWindowFocus: true,
-      // refetchInterval: 1000,
+      refetchInterval: shouldPoll ? 1000 : false,
       // refetchIntervalInBackground: false,
       // enabled: false,
     }
